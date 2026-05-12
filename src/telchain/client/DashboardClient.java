@@ -216,19 +216,19 @@ public class DashboardClient {
                 switch (evType) {
                     case "NEW_BLOCK" ->                     {
                             String[] ep = payload.split("\\|");
-                            System.out.println("\n🔗 NEW BLOCK mined! Index: " + ep[0]
+                            System.out.println("\n NEW BLOCK mined! Index: " + ep[0]
                                     + "  Hash: " + (ep.length > 1 ? ep[1].substring(0, 12) : "?") + "..."
                                             + "  Txs: " + (ep.length > 2 ? ep[2] : "?"));
                         }
                     case "NEW_TX" ->                     {
                             String[] ep = payload.split("\\|");
-                            System.out.printf("📡 New telemetry from %-10s  Temp:%5s°C  Hum:%5s%%  Pres:%6s hPa%n",
+                            System.out.printf(" New telemetry from %-10s  Temp:%5s°C  Hum:%5s%%  Pres:%6s hPa%n",
                                     ep.length > 0 ? ep[0] : "?",
                                     ep.length > 1 ? ep[1] : "?",
                                     ep.length > 2 ? ep[2] : "?",
                                     ep.length > 3 ? ep[3] : "?");
                         }
-                    default -> System.out.println("⚡ EVENT [" + evType + "]: " + payload);
+                    default -> System.out.println(" EVENT [" + evType + "]: " + payload);
             }
             }
             case "ACK"  -> System.out.println("[Dashboard] ACK: " + (parts.length > 1 ? parts[1] : ""));
