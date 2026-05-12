@@ -195,39 +195,41 @@ public class DashboardClient {
                 // CHAIN_OK|blockCount|tipHash|timestamp
                 System.out.println("\n╔═══════════════════════════════════════╗");
                 System.out.println("║  ✓  CHAIN INTEGRITY: VALID            ║");
-                System.out.printf( "║  Blocks: %-30s║%n", parts[1]);
-                System.out.printf( "║  Tip:    %-30s║%n", parts[2].substring(0, 16) + "...");
+                System.out.printf( "║  Blocks: %-29s║%n", parts[1]);
+                System.out.printf( "║  Tip:    %-29s║%n", parts[2].substring(0, 16) + "...");
                 System.out.println("╚═══════════════════════════════════════╝");
             }
             case "CHAIN_ERR" -> {
                 System.out.println("\n╔═══════════════════════════════════════╗");
                 System.out.println("║  ✗  CHAIN INTEGRITY: INVALID!         ║");
-                System.out.printf( "║  At block: %-28s║%n", parts[1]);
-                System.out.printf( "║  Reason:   %-28s║%n", parts[2]);
+                System.out.printf( "║  At block: %-29s║%n", parts[1]);
+                System.out.printf( "║  Reason:   %-29s║%n", parts[2]);
                 System.out.println("╚═══════════════════════════════════════╝");
             }
             case "EVENT" -> {
                 // EVENT|type|payload
                 String evType   = parts.length > 1 ? parts[1] : "?";
-                String payload  = parts.length > 2 ? parts[2] : "";
+                String payload  = parts.length > 2 ? String.join("|", Arrays.copyOfRange(parts, 2, parts.length)) : "";
                 String logEntry = "[" + new java.util.Date() + "] EVENT:" + evType + " | " + payload;
                 synchronized (eventLog) { eventLog.add(logEntry); }
 
-                if (evType.equals("NEW_BLOCK")) {
-                    String[] ep = payload.split("\\|");
-                    System.out.println("\n🔗 NEW BLOCK mined! Index: " + ep[0]
-                            + "  Hash: " + (ep.length > 1 ? ep[1].substring(0, 12) : "?") + "..."
-                            + "  Txs: " + (ep.length > 2 ? ep[2] : "?"));
-                } else if (evType.equals("NEW_TX")) {
-                    String[] ep = payload.split("\\|");
-                    System.out.printf("📡 New telemetry from %-10s  Temp:%5s°C  Hum:%5s%%  Pres:%6s hPa%n",
-                            ep.length > 0 ? ep[0] : "?",
-                            ep.length > 1 ? ep[1] : "?",
-                            ep.length > 2 ? ep[2] : "?",
-                            ep.length > 3 ? ep[3] : "?");
-                } else {
-                    System.out.println("⚡ EVENT [" + evType + "]: " + payload);
-                }
+                switch (evType) {
+                    case "NEW_BLOCK" ->                     {
+                            String[] ep = payload.split("\\|");
+                            System.out.println("\n🔗 NEW BLOCK mined! Index: " + ep[0]
+                                    + "  Hash: " + (ep.length > 1 ? ep[1].substring(0, 12) : "?") + "..."
+                                            + "  Txs: " + (ep.length > 2 ? ep[2] : "?"));
+                        }
+                    case "NEW_TX" ->                     {
+                            String[] ep = payload.split("\\|");
+                            System.out.printf("📡 New telemetry from %-10s  Temp:%5s°C  Hum:%5s%%  Pres:%6s hPa%n",
+                                    ep.length > 0 ? ep[0] : "?",
+                                    ep.length > 1 ? ep[1] : "?",
+                                    ep.length > 2 ? ep[2] : "?",
+                                    ep.length > 3 ? ep[3] : "?");
+                        }
+                    default -> System.out.println("⚡ EVENT [" + evType + "]: " + payload);
+            }
             }
             case "ACK"  -> System.out.println("[Dashboard] ACK: " + (parts.length > 1 ? parts[1] : ""));
             case "PONG" -> System.out.println("[Dashboard] PONG ← server alive");
